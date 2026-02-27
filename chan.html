@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>I Love My Panda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --accent:#ee9ca7;
+            --accent-2:#ffdde1;
+            --card-bg: rgba(255,255,255,0.85);
+        }
+        *{box-sizing:border-box}
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            /* subtle tiled heart pattern over soft gradient */
+            background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='%23ffb3c0'%20d='M12%2021s-8-5.4-8-10a5%205%200%200%201%208-4%205%205%200%200%201%208%204c0%204.6-8%2010-8%2010z'/%3E%3C/svg%3E"), linear-gradient(135deg,var(--accent-2), #f6d2d9 40%, #fff 100%);
+            background-repeat: repeat, no-repeat;
+            background-size: 48px 48px, cover;
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding: 32px;
+        }
+
+        .card{
+            width:100%;
+            max-width:880px;
+            background: rgba(255,255,255,0.95);
+            border-radius:18px;
+            border: 2px solid rgba(255,182,195,0.3);
+            box-shadow: 0 12px 40px rgba(233,100,140,0.12);
+            overflow:visible;
+            display:grid;
+            grid-template-columns: 1fr 400px;
+            gap:0;
+        }
+
+        @media(max-width:900px){
+            .card{grid-template-columns: 1fr;}
+            .media{padding:20px;}
+            .photo{width:280px;height:280px;}
+            h1{font-size:28px;}
+            .content{padding:30px 24px;}
+        }
+
+        @media(max-width:600px){
+            body{padding:16px;}
+            .card{max-width:100%;}
+            .photo{width:220px;height:220px;}
+            .content{padding:20px 16px;}
+            h1{font-size:24px;}
+            .question{font-size:18px;}
+            .btn{padding:8px 14px;font-size:14px;}
+        }
+
+        .content{
+            padding:40px 36px;
+            word-wrap:break-word;
+            overflow-wrap:break-word;
+        }
+
+        h1{
+            margin:0 0 8px 0;
+            font-size:48px;
+            color:skyblue;
+            font-weight:600;
+            font-family: 'Great Vibes', cursive;
+            letter-spacing:1px;
+        }
+
+        p.lead{
+            margin:6px 0 18px 0;
+            color:#555;
+            font-size:16px;
+        }
+
+        .question{
+            margin:18px 0;
+            font-size:20px;
+            color:#222;
+        }
+
+        .controls{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:10px 16px;
+            border-radius:10px;
+            border:none;
+            cursor:pointer;
+            font-weight:600;
+            transition:transform .15s ease, box-shadow .15s;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+
+        .btn:active{transform:translateY(1px)}
+
+        .btn-like{background:linear-gradient(90deg,var(--accent),#f7b6c1); color:white}
+        .btn-no{background:#f25a5a;color:white}
+
+        .result{margin-top:16px;font-weight:600;color:#2b2b2b}
+
+        .media{
+            padding:28px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            gap:18px;
+            background: transparent;
+            min-width:0;
+        }
+
+        .photo{
+            width:360px;
+            height:360px;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow: 0 16px 48px rgba(233,100,140,0.25);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,245,0.9));
+            border: 2px solid rgba(255,182,195,0.4);
+            flex-shrink:0;
+            opacity:0;
+            transition:opacity .6s ease;
+        }
+
+        .photo img{width:100%;height:100%;object-fit:cover}
+
+        .playlist{width:100%;}
+
+        /* anger overlay */
+        #anger{
+            position:fixed;
+            top:0;left:0;right:0;bottom:0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:8rem;
+            background:rgba(255,255,255,0.8);
+            opacity:0;
+            transition:opacity .3s;
+            pointer-events:none;
+        }
+        #happy{
+            position:fixed;
+            top:0;left:0;right:0;bottom:0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:8rem;
+            background:rgba(255,255,255,0.6);
+            opacity:0;
+            transition:opacity .3s;
+            pointer-events:none;
+        }
+        /* blinking heart */
+        .blink-heart{
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            font-size:10rem;
+            animation:blink 1s ease-in-out 3;
+            pointer-events:none;
+            z-index:9999;
+        }
+        @keyframes blink{
+            0%,100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+            50%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}
+        }
+
+        footer{font-size:13px;color:#666;padding:18px 0 8px 0}
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="content">
+        <h1>I love my panda 🐼</h1>
+        <p class="lead">This page is for you — because you're my world. ❤️</p>
+
+        <div class="question">Am I perfect to you?</div>
+
+        <div class="controls">
+            <button class="btn btn-no" id="yesBtn" onclick="answerYes()">yes❤️</button>
+            <button class="btn btn-like" id="noBtn" onclick="answerNo()">no💔</button>
+            <div style="flex:1"></div>
+        </div>
+
+        <div class="result" id="resultText"></div>
+
+        <footer>Made with ❤️</footer>
+    </div>
+
+    <div class="media">
+        <div class="photo">
+            <img src="WhatsApp Image 2026-02-19 at 9.10.42 PM (2).jpeg" alt="Panda Image">
+        </div>
+
+        <div class="playlist" style="width:100%">
+            <h3 style="margin:0 0 8px 0;color:#d32f2f;font-weight:600;font-size:18px;">💕 Listen with Love 💕</h3>
+            <audio id="audioPlayer" controls loop style="width:100%;"><source id="audioSource" src="mungaru songs.mp3.mpeg" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn" id="playToggle" style="background:var(--accent);color:white;font-size:18px">❤️ Play</button>
+                <button class="btn" onclick="changeSong('mungaru songs.mp3.mpeg')" style="background:#ffb6c1;color:white">💖 Song 1</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- anger overlay -->
+<div id="anger">😡</div>
+<!-- happy overlay -->
+<div id="happy">😊</div>
+<!-- container for blinking hearts -->
+<div id="heartContainer"></div>
+
+<script>
+function answerYes(){
+    document.getElementById('resultText').textContent = ' thank you so much you are my world chan.';
+    document.querySelector('.photo').style.opacity = '1';
+    document.getElementById('anger').style.opacity = '0';
+    const happy = document.getElementById('happy');
+    happy.style.opacity='1';
+    setTimeout(()=>{happy.style.opacity='0';},2000);
+    // blinking heart overlay
+    const container = document.getElementById('heartContainer');
+    const heart = document.createElement('div');
+    heart.className = 'blink-heart';
+    heart.textContent = '💖';
+    container.appendChild(heart);
+    setTimeout(()=>{container.removeChild(heart);},3000);
+}
+function answerNo(){
+    document.getElementById('resultText').textContent = '🤬 I feel angry now!';
+    document.querySelector('.photo').style.opacity = '0';
+    const anger = document.getElementById('anger');
+    anger.style.opacity = '1';
+    setTimeout(()=>{anger.style.opacity='0';},2000);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    const audio = document.getElementById('audioPlayer');
+    const playToggle = document.getElementById('playToggle');
+
+    // Set initial button label based on audio state
+    playToggle.textContent = audio.paused ? '❤️ Play' : '💔 Pause';
+
+    playToggle.addEventListener('click', function(){
+        if(audio.paused){
+            audio.play().then(()=> playToggle.textContent='💔 Pause').catch(err=>console.log('Playback prevented:',err));
+        } else {
+            audio.pause();
+            playToggle.textContent='❤️ Play';
+        }
+    });
+});
+
+function changeSong(src){
+    const audio = document.getElementById('audioPlayer');
+    const source = document.getElementById('audioSource');
+    source.src = src;
+    audio.load();
+    audio.play().then(()=>{
+        document.getElementById('playToggle').textContent='💔 Pause';
+    }).catch(err=>console.log('Playback prevented:',err));
+}
+</script>
+
+</body>
+</html>
